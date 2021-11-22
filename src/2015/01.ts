@@ -1,5 +1,3 @@
-// https://adventofcode.com/2015/day/1
-
 let getFinalFloor: (string) => number = (list: string): number => {
     let result: number = 0;
 
