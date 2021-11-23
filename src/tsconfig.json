@@ -4,7 +4,7 @@
     "module": "commonjs",
     "outDir": "out",
     "sourceMap": true,
-    "target": "es5"
+    "target": "es6"
   },
   "include": [
     "./global.ts",
