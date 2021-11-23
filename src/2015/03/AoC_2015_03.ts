@@ -43,10 +43,10 @@ namespace AoC {
             return grid.length;
         };
         
-        getHousesCount2 = (list: string): number  => {
+        getHousesCount2 = (list: string, numOfTravelers: number): number  => {
             // The current position in the grid: x,y
-            let x: number[] = [0, 0];
-            let y: number[] = [0, 0];
+            let x: number[] = Array(numOfTravelers).fill(0);
+            let y: number[] = Array(numOfTravelers).fill(0);
 
             // The grid, with starting position 0,0
             // - right is positive x
@@ -59,7 +59,7 @@ namespace AoC {
             for (let i=0; i<list.length; i++) {
                 //console.log(`${i}: ${list[i]}`);
 
-                let travelerIndex = i % 2;
+                let travelerIndex = i % numOfTravelers;
 
                 switch(list[i]) {
                     case '^': // north
@@ -106,4 +106,4 @@ input = fs.readFileSync('../../../2015/03/data.txt', {encoding:'utf8'}).toString
 
 let aoc_2015_03: AoC.AoC_2015_03 = new AoC.AoC_2015_03();
 console.log(aoc_2015_03.getHousesCount(input)); // 2592
-console.log(aoc_2015_03.getHousesCount2(input)); // 2360
+console.log(aoc_2015_03.getHousesCount2(input, 2)); // 2360
