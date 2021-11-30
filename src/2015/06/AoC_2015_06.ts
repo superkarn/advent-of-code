@@ -5,10 +5,65 @@ namespace AoC._2015_06 {
         static ACTION_TOGGLE: string = "toggle";
         static ACTION_TURN: string = "turn";
 
+        gridWidth: number = 1000;
+        gridHeight: number = 1000;
+        grid: LightState[][];
+
+        constructor() {
+            this.resetGrid();
+        }
+
+        // Reset the grid to all Off
+        resetGrid = (): void => {
+            this.grid = Array.from(
+                Array(this.gridWidth), 
+                () => Array(this.gridHeight).fill(LightState.Off)
+            );
+        };
+
         getLitGridCount = (list: Instruction[]): number  => {
+            for (let i=0; i<list.length; i++) {
+                this.flipLights(list[i]);
+            }
+            //console.log(this.grid);
+
+            return this.countLightsOn();
+        };
+
+        flipLights = (ins: Instruction): void => {
+            for (let i=ins.StartCorner.X; i<=ins.EndCorner.X; i++) {
+                for (let j=ins.StartCorner.Y; j<=ins.EndCorner.Y; j++) {
+                    switch (ins.Action) {
+                        case Action.Off:
+                            this.grid[i][j] = LightState.Off;
+                            break;
+                            
+                        case Action.On:
+                            this.grid[i][j] = LightState.On;
+                            break;
+                            
+                        case Action.Toggle:
+                            if (this.grid[i][j] == LightState.Off) {
+                                this.grid[i][j] = LightState.On;
+                            } else {
+                                this.grid[i][j] = LightState.Off;
+                            }
+                            break;
+                    }
+                }
+            }
+        };
+
+        countLightsOn = (): number => {
             let result: number = 0;
-            
-            console.log(list);
+
+            for (let i=0; i<this.gridWidth; i++) {
+                for (let j=0; j<this.gridHeight; j++) {
+                    if (this.grid[i][j] == LightState.On) {
+                        result++;
+                    }
+                }
+            }
 
             return result;
         };
@@ -83,6 +138,11 @@ namespace AoC._2015_06 {
         Off = 0,
         On = 1,
         Toggle = 2
+    }
+
+    enum LightState {
+        Off = 0,
+        On = 1
     }
 
     class Position {
