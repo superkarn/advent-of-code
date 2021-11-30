@@ -1,7 +1,5 @@
 namespace AoC {
     export class AoC_2015_05 {
-        CryptoJS = require('crypto-js');
-
         static readonly VOWELS: string[] = ['a', 'e', 'i', 'o', 'u'];
         static readonly BLACK_LIST: string[] = ['ab', 'cd', 'pq', 'xy'];
 
