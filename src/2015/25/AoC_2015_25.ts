@@ -8,11 +8,15 @@ namespace AoC._2015_25 {
 
         parseInput = (input: string): string => {
             return input;
-        }
+        };
 
         getCodeAt = (x: number, y: number): number => {
             return 0;
-        }
+        };
+
+        getNextCode = (currentCode: number): number => {
+            return (currentCode * Main.MULTIPLYER) % Main.DIVIDER;
+        };
     }
 }
 
