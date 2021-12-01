@@ -68,6 +68,50 @@ namespace AoC._2015_06 {
             return result;
         };
 
+        gitGridBrightness = (list: Instruction[]): number => {
+            for (let i=0; i<list.length; i++) {
+                this.adjustBrightness(list[i]);
+            }
+            //console.log(this.grid);
+
+            return this.countBrightness();
+        };
+
+        adjustBrightness = (ins: Instruction): void => {
+            for (let i=ins.StartCorner.X; i<=ins.EndCorner.X; i++) {
+                for (let j=ins.StartCorner.Y; j<=ins.EndCorner.Y; j++) {
+                    switch (ins.Action) {
+                        case Action.Off:
+                            this.grid[i][j]--;
+                            if (this.grid[i][j] < 0) {
+                                this.grid[i][j] = 0;
+                            }
+                            break;
+                            
+                        case Action.On:
+                            this.grid[i][j]++;
+                            break;
+                            
+                        case Action.Toggle:
+                            this.grid[i][j] += 2;
+                            break;
+                    }
+                }
+            }
+        };
+
+        countBrightness = (): number => {
+            let result: number = 0;
+
+            for (let i=0; i<this.gridWidth; i++) {
+                for (let j=0; j<this.gridHeight; j++) {
+                    result += this.grid[i][j];
+                }
+            }
+
+            return result;
+        };
+
         parseInput = (input: string): Instruction[] => {
             return input
                 .split('\n')
@@ -169,4 +213,5 @@ fs = require('fs');
 input = fs.readFileSync('../../../2015/06/data.txt', {encoding:'utf8'}).toString();
 
 let AoC_2015_06: AoC._2015_06.Main = new AoC._2015_06.Main();
-console.log(AoC_2015_06.getLitGridCount(AoC_2015_06.parseInput(input))); // 
+console.log(AoC_2015_06.getLitGridCount(AoC_2015_06.parseInput(input))); // 569999
+console.log(AoC_2015_06.gitGridBrightness(AoC_2015_06.parseInput(input))); // 17836115
