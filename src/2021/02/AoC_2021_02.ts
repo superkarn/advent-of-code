@@ -32,40 +32,67 @@ namespace AoC._2021_02 {
             for (let i=0; i<list.length; i++) {
                 switch (list[i].Direction) {
                     case Direction.Forward:
-                        this.CurrentPosition.forward(list[i].Distance);
+                        this.forward(list[i].Distance);
                         break;
                         
                     case Direction.Up:
-                        this.CurrentPosition.up(list[i].Distance);
+                        this.up(list[i].Distance);
                         break;
                         
                     case Direction.Down:
-                        this.CurrentPosition.down(list[i].Distance);
+                        this.down(list[i].Distance);
                         break;
                 }
             }
 
-            return this.CurrentPosition.getMultiple();
+            return this.CurrentPosition.getProduct();
         };
         
         travel2 = (list: Instruction[]): number => {
             for (let i=0; i<list.length; i++) {
                 switch (list[i].Direction) {
                     case Direction.Forward:
-                        this.CurrentPosition.forward2(list[i].Distance);
+                        this.forward2(list[i].Distance);
                         break;
                         
                     case Direction.Up:
-                        this.CurrentPosition.up2(list[i].Distance);
+                        this.up2(list[i].Distance);
                         break;
                         
                     case Direction.Down:
-                        this.CurrentPosition.down2(list[i].Distance);
+                        this.down2(list[i].Distance);
                         break;
                 }
             }
 
-            return this.CurrentPosition.getMultiple();
+            return this.CurrentPosition.getProduct();
+        };
+
+        
+        
+        private down = (input: number): void => {
+            this.CurrentPosition.Y += input
+        };
+
+        private forward = (input: number): void => {
+            this.CurrentPosition.X += input
+        };
+        
+        private up = (input: number): void => {
+            this.CurrentPosition.Y -= input
+        };        
+        
+        private down2 = (input: number): void => {
+            this.CurrentPosition.Aim += input
+        };
+
+        private forward2 = (input: number): void => {
+            this.CurrentPosition.X += input
+            this.CurrentPosition.Y += input * this.CurrentPosition.Aim;
+        };
+        
+        private up2 = (input: number): void => {
+            this.CurrentPosition.Aim -= input
         };
     }
 
@@ -84,32 +111,7 @@ namespace AoC._2021_02 {
             return `[${this.X}, ${this.Y}: ${this.Aim}]`;
         };
         
-        down = (input: number): void => {
-            this.Y += input
-        };
-
-        forward = (input: number): void => {
-            this.X += input
-        };
-        
-        up = (input: number): void => {
-            this.Y -= input
-        };
-        
-        down2 = (input: number): void => {
-            this.Aim += input
-        };
-
-        forward2 = (input: number): void => {
-            this.X += input
-            this.Y += input * this.Aim;
-        };
-        
-        up2 = (input: number): void => {
-            this.Aim -= input
-        };
-        
-        getMultiple = (): number => {
+        getProduct = (): number => {
             return this.X * this.Y;
         };
     }
