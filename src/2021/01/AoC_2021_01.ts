@@ -4,7 +4,7 @@ namespace AoC._2021_01 {
 
         parseInput = (input: string): number[] => {
             let result: number[] = input
-                .split('\n')
+                .split('\r\n')
                 .filter((value: string) => value != null)
                 .map((value: string) => parseInt(value));
 

@@ -8,7 +8,7 @@ namespace AoC._2021_02 {
 
         parseInput = (input: string): Instruction[] => {
             let result: Instruction[] = input
-                .split('\n')
+                .split('\r\n')
                 .filter((value: string) => value != null)
                 .map((value: string, i: number) => {
                     let instructionSet = value.split(' ');
