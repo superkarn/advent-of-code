@@ -46,10 +46,36 @@ namespace AoC._2021_04 {
                 for (let j=0; j<this.boards.length; j++) {
                     this.boards[j].markNumber(this.sequence[i]);
 
-                    if (this.boards[j].hasWon()) {
-                        console.log(`winning board[${j}]: \r\n${this.boards[j]}`);
+                    if (this.boards[j].checkIfWon()) {
+                        console.log(`first winning board[${j}]: \r\n${this.boards[j]}`);
                         
                         return this.boards[j].calculateFinalScore(this.sequence[i]);
+                    }
+                }
+            }
+
+            return 0;
+        };
+
+        getLastWinningBoardScore = (): number => {
+            let numberOfWinningBoards: number = 0;
+            for (let i=0; i<this.sequence.length; i++) {
+                for (let j=0; j<this.boards.length; j++) {
+                    // This this board has already won, skip
+                    if (this.boards[j].hasWon) {
+                        continue;
+                    }
+
+                    this.boards[j].markNumber(this.sequence[i]);
+
+                    if (this.boards[j].checkIfWon()) {
+                        numberOfWinningBoards++;
+
+                        if (numberOfWinningBoards == this.boards.length) {
+                            console.log(`last winning board[${j}]: \r\n${this.boards[j]}`);
+                            
+                            return this.boards[j].calculateFinalScore(this.sequence[i]);
+                        }
                     }
                 }
             }
@@ -71,6 +97,9 @@ namespace AoC._2021_04 {
 
         // Contains the status of each number
         statuses: CelStatus[][];
+
+        // True if the board has winning numbers
+        hasWon: boolean;
 
         constructor() {
             this.numbers = Array(this.SIZE)
@@ -121,7 +150,7 @@ namespace AoC._2021_04 {
         // Check if the board has won.
         // Winning means all numbers in a row are marked.
         // Or all numbers in a column are marked.
-        hasWon = (): boolean => {
+        checkIfWon = (): boolean => {
             // Check rows
             for (let i=0; i<this.SIZE; i++) {
                 let winningSet: boolean = true;
@@ -132,7 +161,8 @@ namespace AoC._2021_04 {
                 }
 
                 if (winningSet) {
-                    return true;
+                    this.hasWon = true;
+                    return this.hasWon;
                 }
             }
 
@@ -146,12 +176,13 @@ namespace AoC._2021_04 {
                 }
 
                 if (winningSet) {
-                    return true;
+                    this.hasWon = true;
+                    return this.hasWon;
                 }
             }
 
-
-            return false;
+            this.hasWon = false;
+            return this.hasWon;
         };
 
         calculateFinalScore = (value: number): number => {
@@ -181,3 +212,4 @@ let AoC_2021_04: AoC._2021_04.Main = new AoC._2021_04.Main();
 
 AoC_2021_04.parseInput(input);
 console.log(AoC_2021_04.getFirstWinningBoardScore()); // 82440
+console.log(AoC_2021_04.getLastWinningBoardScore()); // 20774
