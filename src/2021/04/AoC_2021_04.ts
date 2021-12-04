@@ -7,6 +7,16 @@ namespace AoC._2021_04 {
             this.boards = [new BingoBoard()];
         }
 
+        toString = (): string => {
+            let result: string = '';
+
+            for (let i=0; i<this.boards.length; i++) {
+                result += this.boards[i].toString() + '\r\n\r\n';
+            }
+
+            return result;
+        };
+
         // TODO update parseInput to actually return something
         parseInput = (input: string): void => {
             let lines: string[] = input
@@ -29,24 +39,63 @@ namespace AoC._2021_04 {
 
                 boardIndex++;
             }
+        };
 
-            console.log(`board: \r\n${this.boards}`);
-        }
+        getFirstWinningBoardScore = (): number => {
+            for (let i=0; i<this.sequence.length; i++) {
+                for (let j=0; j<this.boards.length; j++) {
+                    this.boards[j].markNumber(this.sequence[i]);
+
+                    if (this.boards[j].hasWon()) {
+                        console.log(`winning board[${j}]: \r\n${this.boards[j]}`);
+                        
+                        return this.boards[j].calculateFinalScore(this.sequence[i]);
+                    }
+                }
+            }
+
+            return 0;
+        };
+    }
+
+    enum CelStatus {
+        Default = 0,
+        Called = 1
     }
 
     class BingoBoard {
         readonly SIZE: number = 5;
 
-        board: number[][];
+        // Contains the numbers on the board
+        numbers: number[][];
+
+        // Contains the status of each number
+        statuses: CelStatus[][];
 
         constructor() {
-            this.board = Array(this.SIZE)
+            this.numbers = Array(this.SIZE)
                             .fill(null)
                             .map(() => Array(this.SIZE).fill(0));
+
+            this.statuses = Array(this.SIZE)
+                            .fill(null)
+                            .map(() => Array(this.SIZE).fill(CelStatus.Default));
         }
 
         toString = (): string => {
-            return this.board.reduce((acc: string, cur: number[]) => acc += `${cur}\r\n`, '');
+            let result = '';
+            for (let i=0; i<this.SIZE; i++) {
+                for (let j=0; j<this.SIZE; j++) {
+                    result += `${this.numbers[i][j].toString().padStart(2, ' ')}, `;
+                }
+                result += ' | ';
+
+                for (let j=0; j<this.SIZE; j++) {
+                    result += `${this.statuses[i][j].toString().padStart(2, ' ')}, `;
+                }
+                result += '\r\n';
+            }
+            return result;
         };
 
         parseRow = (rowNumber: number, input: string): void => {
@@ -54,7 +103,73 @@ namespace AoC._2021_04 {
                                      .filter(x => x.length > 0)
                                      .map(x => parseInt(x));
                                      
-            this.board[rowNumber] = row;
+            this.numbers[rowNumber] = row;
+        };
+
+        // Mark the number.  Assume each cell has unique value.
+        markNumber = (value: number): void => {
+            for (let i=0; i<this.SIZE; i++) {
+                for (let j=0; j<this.SIZE; j++) {
+                    if (this.numbers[i][j] == value) {
+                        this.statuses[i][j] = CelStatus.Called;
+                        return;
+                    }
+                }
+            }
+        };
+
+        // Check if the board has won.
+        // Winning means all numbers in a row are marked.
+        // Or all numbers in a column are marked.
+        hasWon = (): boolean => {
+            // Check rows
+            for (let i=0; i<this.SIZE; i++) {
+                let winningSet: boolean = true;
+                for (let j=0; j<this.SIZE; j++) {
+                    if (this.statuses[i][j] == CelStatus.Default) {
+                        winningSet = false;
+                    }
+                }
+
+                if (winningSet) {
+                    return true;
+                }
+            }
+
+            // Check columns
+            for (let j=0; j<this.SIZE; j++) {
+                let winningSet: boolean = true;
+                for (let i=0; i<this.SIZE; i++) {
+                    if (this.statuses[i][j] == CelStatus.Default) {
+                        winningSet = false;
+                    }
+                }
+
+                if (winningSet) {
+                    return true;
+                }
+            }
+
+
+            return false;
+        };
+
+        calculateFinalScore = (value: number): number => {
+            let result: number = 0;
+
+            // Get sum of unmarked numbers
+            for (let i=0; i<this.SIZE; i++) {
+                for (let j=0; j<this.SIZE; j++) {
+                    if (this.statuses[i][j] == CelStatus.Default) {
+                        result += this.numbers[i][j];
+                    }
+                }
+            }
+
+            // multiply it by the latest sequence
+            result *= value;
+
+            return result;
         };
     }
 }
@@ -65,4 +180,4 @@ input = fs.readFileSync('../../../2021/04/data.txt', {encoding:'utf8'}).toString
 let AoC_2021_04: AoC._2021_04.Main = new AoC._2021_04.Main();
 
 AoC_2021_04.parseInput(input);
-console.log(AoC_2021_04.getFinalScore()); // 
+console.log(AoC_2021_04.getFirstWinningBoardScore()); // 82440
