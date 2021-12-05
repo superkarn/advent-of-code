@@ -57,20 +57,19 @@ namespace AoC._2021_05 {
     }
 
     class Map {
-        readonly SIZE = 1000;
         grid: number[][];
 
-        constructor () {
-            this.grid = Array(this.SIZE)
+        constructor (dimension: number = 1000) {
+            this.grid = Array(dimension)
                             .fill(null)
-                            .map(() => Array(this.SIZE).fill(0));
+                            .map(() => Array(dimension).fill(0));
         }
 
         toString = (): string => {
             let result = '';
 
-            for (let i=0; i<this.SIZE; i++) {
-                for (let j=0; j<this.SIZE; j++) {
+            for (let i=0; i<this.grid.length; i++) {
+                for (let j=0; j<this.grid.length; j++) {
                     // swap j,i so x,y will look right
                     if (this.grid[j][i] == 0) {
                         result += '.';
@@ -85,42 +84,59 @@ namespace AoC._2021_05 {
         };
 
         plotLine = (line: Position[]): void => {
-            // For now, only plot vertical or horizontal lines
-            if (line[0].X != line[1].X &&
-                line[0].Y != line[1].Y) {
-                return;
-            }
+            let start: Position = line[0];
+            let end: Position = line[1];
 
             // Vertical line
-            if (line[0].X == line[1].X) {
-                //console.log(`  vertical line from ${line[0].X},${line[0].Y} to ${line[1].X},${line[1].Y}`);
+            if (start.X == end.X) {
+                //console.log(`    vertical line from ${start.X},${start.Y} to ${end.X},${end.Y}`);
                 
                 // plot from smaller to larger
-                let start = Math.min(line[0].Y, line[1].Y);
-                let end = Math.max(line[0].Y, line[1].Y);
-                for (let i=start; i<=end; i++) {
-                    this.grid[line[0].X][i]++;
+                let startY = Math.min(start.Y, end.Y);
+                let endY = Math.max(start.Y, end.Y);
+                for (let i=startY; i<=endY; i++) {
+                    this.grid[start.X][i]++;
                 }
             } 
             // Horizontal line
             // Using "else", so that we don't double map.
-            else if (line[0].Y == line[1].Y) {
-                //console.log(`  horizontal line from ${line[0].X},${line[0].Y} to ${line[1].X},${line[1].Y}`);
+            else if (start.Y == end.Y) {
+                //console.log(`  horizontal line from ${start.X},${start.Y} to ${end.X},${end.Y}`);
                 
                 // plot from smaller to larger
-                let start = Math.min(line[0].X, line[1].X);
-                let end = Math.max(line[0].X, line[1].X);
-                for (let i=start; i<=end; i++) {
-                    this.grid[i][line[0].Y]++;
+                let startX = Math.min(start.X, end.X);
+                let endX = Math.max(start.X, end.X);
+                for (let i=startX; i<=endX; i++) {
+                    this.grid[i][start.Y]++;
                 }
             }
-        }
+            // Diagonal line
+            else if (Math.abs(end.X-start.X) == Math.abs(end.Y-start.Y)) {
+                //console.log(`   diangonal line from ${start.X},${start.Y} to ${end.X},${end.Y}`);
+
+                let steps: number = Math.abs(start.X - end.X);
+                let x: number = start.X;
+                let y: number = start.Y;
+
+                let deltaX = start.X == end.X ? 0 : start.X < end.X ? 1 : -1;
+                let deltaY = start.Y == end.Y ? 0 : start.Y < end.Y ? 1 : -1;
+    
+                for (let i=0; i<=steps; i++) {
+                    this.grid[x][y]++;
+                    
+                    x += deltaX;
+                    y += deltaY;
+                }
+            } else {
+                console.log(`         bad line from ${start.X},${start.Y} to ${end.X},${end.Y}`);
+            }
+        };
 
         countDangerousPositions = (threshold: number): number => {
             let result:  number = 0;
 
-            for (let i=0; i<this.SIZE; i++) {
-                for (let j=0; j<this.SIZE; j++) {
+            for (let i=0; i<this.grid.length; i++) {
+                for (let j=0; j<this.grid.length; j++) {
                     if (this.grid[i][j] >= threshold) {
                         result++;
                     }
@@ -128,7 +144,7 @@ namespace AoC._2021_05 {
             }
 
             return result;
-        }
+        };
     }
 }
 
@@ -136,4 +152,4 @@ fs = require('fs');
 input = fs.readFileSync('../../../2021/05/data.txt', {encoding:'utf8'}).toString();
 
 let AoC_2021_05: AoC._2021_05.Main = new AoC._2021_05.Main();
-console.log(AoC_2021_05.findDangerPoints(AoC_2021_05.parseInput(input), 2)); // 5197
+console.log(AoC_2021_05.findDangerPoints(AoC_2021_05.parseInput(input), 2)); // 5197, 18605
