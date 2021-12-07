@@ -26,14 +26,16 @@ namespace AoC._2021_06 {
         };
 
         simulateDays = (days: number): number => {
-            let currentPool = 0;
+            let maxPoolSize = 0;
             for (let i=0; i<days; i++) {
-                //console.log(`${i}: ${this.poolsOfFish[currentPool].length}`);
-                //console.log(`  day ${i}: ${this.poolsOfFish[currentPool].length} => ${this.poolsOfFish[currentPool]}`);
+                console.log(`  new day[${i}]. ${this.poolsOfFish.length} pools`);
 
                 let offsprings: Fish[] = [];
 
                 for (let f1=0; f1<this.poolsOfFish.length; f1++) {
+                    //process.stdout.write(`.`);
+                    //console.log(`  day[${i}], pool[${f1}]: ${this.poolsOfFish[f1]}`);
+
                     for (let f2=0; f2<this.poolsOfFish[f1].length; f2++) {
                         let hasNewOffspring: boolean = this.poolsOfFish[f1][f2].grow();
 
@@ -42,27 +44,40 @@ namespace AoC._2021_06 {
                         }
                     }
                 }
+                //console.log(`;`);
 
-                // If the pool is already larger than max, go to the next pool
-                if (this.poolsOfFish[currentPool].length > Main.POOL_SIZE) {
-                    currentPool++;
-                    console.log(`--adding a new pool: ${currentPool}`);
+                // // If the pool is already larger than max, go to the next pool
+                // if (this.poolsOfFish[currentPool].length > Main.POOL_SIZE) {
+                //     currentPool++;
+                //     console.log(`--adding a new pool: ${currentPool}`);
 
-                    this.poolsOfFish[currentPool] = [];
-                }
+                //     this.poolsOfFish[currentPool] = [];
+                // }
 
-                console.log(`    offspring size: ${offsprings.length}`);
                 // Add the offspring to the pool
-                // - Using array1.merge(array2) is very slow, and the heap can run out of memory
+                // 1- Using array1.merge(array2) is very slow, and the heap can run out of memory
                 //this.poolsOfFish[currentPool] = this.poolsOfFish[currentPool].concat(offsprings);
                 //
-                // - Using array1.push(...array2) is fast, but can run out of stack size when array2 is too large
+                // 2- Using array1.push(...array2) is fast, but can run out of stack size when array2 is too large
                 //this.poolsOfFish[currentPool].push(...offsprings);
                 //
-                // - So we're using a custom merge instead
-                while (offsprings.length > 0) {
-                    //console.log(`      merging offspring size: ${offsprings.length}`);
-                    this.poolsOfFish[currentPool].push(...(offsprings.splice(0,10000)));
+                // 3- push() using batches doesn't help either
+                // while (offsprings.length > 0) {
+                //     //console.log(`      merging offspring size: ${offsprings.length}`);
+                //     this.poolsOfFish[currentPool].push(...(offsprings.splice(0,10000)));
+                // }
+                //
+                // 4- always add offsprings into a new pool by themselves
+                if (offsprings.length > 0) {
+                    console.log(`  day[${i}], ${offsprings.length} new offsprings`);
+                    
+                    while (offsprings.length > 0) {
+                        maxPoolSize = Math.max(maxPoolSize, offsprings.length);
+
+                        //console.log('Memory    : ', process.memoryUsage().heapUsed);
+                        console.log(`  day[${i}], creating a new pool for total of ${this.poolsOfFish.length}    ${maxPoolSize}`);
+                        this.poolsOfFish.push(offsprings.splice(0,Main.POOL_SIZE));
+                    }
                 }
             }
 
@@ -70,15 +85,6 @@ namespace AoC._2021_06 {
             //     console.log(`-- pool[${index}] size: ${value.length}`);
             // });
             return this.poolsOfFish.reduce((acc, cur) => acc+=cur.length, 0);
-        };
-
-        // Add arr2 into arr1 in batches
-        private mergeArrays = (arr1: Fish[], arr2: Fish[]): void => {
-            let arraySize = Main.POOL_SIZE;
-
-            while (arr2.length > 0) {
-                arr1.push(...(arr2.splice(0, arraySize)));
-            }
         };
     }
 
