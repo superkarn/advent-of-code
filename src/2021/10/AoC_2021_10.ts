@@ -90,6 +90,23 @@ namespace AoC._2021_10 {
                    (open == '{' && close == '}') ||
                    (open == '<' && close == '>');
         };
+
+        calculateMiddleScoreForAutocomplete = (list: string[][]): number => {
+            
+            
+            // Remove corrupted lines
+            for (let i=0; i<list.length; i++) {
+                //console.log(`line ${i} -----`);
+                let error = this.getFirstError(list[i]);
+                if (error.length > 0) {
+                    list[i] = [];
+                }
+            }
+
+            console.log(list);
+
+            return 0;
+        }
     }
 }
 
@@ -97,4 +114,5 @@ fs = require('fs');
 input = fs.readFileSync('../../../2021/10/data.txt', {encoding:'utf8'}).toString();
 
 let AoC_2021_10: AoC._2021_10.Main = new AoC._2021_10.Main();
-console.log(AoC_2021_10.calculateSyntaxErrorScore(AoC_2021_10.parseInput(input))); // 364389
+//console.log(AoC_2021_10.calculateSyntaxErrorScore(AoC_2021_10.parseInput(input))); // 364389
+console.log(AoC_2021_10.calculateMiddleScoreForAutocomplete(AoC_2021_10.parseInput(input))); //
