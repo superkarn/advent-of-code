@@ -25,13 +25,25 @@ namespace AoC._2021_11 {
                 map.step();
             };
 
-            console.log(`After ${steps} steps: \r\n${map.toString()}`);
+            //console.log(`After ${steps} steps: \r\n${map.toString()}`);
             return map.countTotalFlashes();
+        };
+
+        findSynchronizedFlash = (map: Map): number => {
+            let result: number = 0;
+
+            while (map.countRecentlyFlashed() < map.size) {
+                map.step();
+                result++;
+            }
+
+            return result;
         };
     }
 
     class Map {
         octopuses: Octopus[][];
+        size: number = 100; // TODO change this to be dynamic
 
         constructor(o: Octopus[][] = []) {
             this.octopuses = o;
@@ -75,12 +87,28 @@ namespace AoC._2021_11 {
             }
         };
 
+        // Return the sum of all octopuses' flash counts
         countTotalFlashes = (): number => {
             let result: number = 0;
             
             for (let y=0; y<this.octopuses.length; y++) {
                 for (let x=0; x<this.octopuses[y].length; x++) {
                     result += this.octopuses[y][x].flashCount;
+                }
+            }
+
+            return result;
+        };
+
+        // Return the number of octopuses currently energized
+        countRecentlyFlashed = (): number => {
+            let result: number = 0;
+
+            for (let y=0; y<this.octopuses.length; y++) {
+                for (let x=0; x<this.octopuses[y].length; x++) {
+                    if (this.octopuses[y][x].energy == 0) {
+                        result++;
+                    }
                 }
             }
 
@@ -196,3 +224,4 @@ input = fs.readFileSync('../../../2021/11/data.txt', {encoding:'utf8'}).toString
 
 let AoC_2021_11: AoC._2021_11.Main = new AoC._2021_11.Main();
 console.log(AoC_2021_11.simulate(AoC_2021_11.parseInput(input), 100)); // 1599
+console.log(AoC_2021_11.findSynchronizedFlash(AoC_2021_11.parseInput(input))); // 418
