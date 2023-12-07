@@ -29,6 +29,19 @@ class Game:
 
         return True
 
+    def get_min_set(self):
+        # Default to a really big number
+        max_r = 0
+        max_g = 0
+        max_b = 0
+
+        for set in self.sets:
+            max_r = max(max_r, set.red)
+            max_g = max(max_g, set.green)
+            max_b = max(max_b, set.blue)
+
+        return (max_r, max_g, max_b)
+
 class Set:
     def __init__(self, r, g, b):
         self.red   = r
@@ -80,6 +93,16 @@ def get_sum_of_valid_game_ids():
             result += game.id
     return result
 
+def get_sum_of_power_of_min_cubes():
+    result = 0
+    for game in data:
+        r, g, b = game.get_min_set()
+        result += r * g * b
+
+    return result
+
+
+
 ##### Run the code
 
 # Load the game data
@@ -88,9 +111,11 @@ data = load_data()
 # Initial cubes in the bag
 bag = Bag(12, 13, 14)
 
-# Calcuate the data for part 1
-result = get_sum_of_valid_game_ids()
+# Calculate the data for part 1
+result1 = get_sum_of_valid_game_ids()
+print(f"Part 1: {result1}")
 
-
-print(f"{result}")
+# Calculate the data for part 2
+result2 = get_sum_of_power_of_min_cubes()
+print(f"Part 2: {result2}")
 
