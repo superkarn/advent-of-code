@@ -1,3 +1,27 @@
+
+class Card:
+    def __init__(self, id):
+        self.id = id
+        self.winning_numbers = {}
+        self.playing_numbers = {}
+
+    def __str__(self):
+        result = f"id:{self.id} -> {self.winning_numbers} | {self.playing_numbers}"
+        return result
+
+    def get_matching_numbers(self):
+        return self.winning_numbers.intersection(self.playing_numbers)
+
+    def calculate_points(self):
+        matching_numbers = self.get_matching_numbers()
+        matching_numbers_count = len(matching_numbers)
+
+        if matching_numbers_count > 0:
+            return pow(2, matching_numbers_count-1)
+        else:
+            return 0
+
+
 def get_lines_from_file_name(file_name):
     data = open(file_name, 'r')
     return data.readlines()
@@ -8,11 +32,35 @@ def load_data():
     for line in lines:
         line_info = line.split(':')
 
+        # Parse the card ID
+        id_in_string = line_info[0].split(' ')
+        id_in_string = [x for x in id_in_string if x != ''] # Remove empty element due to leading black spaces
+        card = Card(int(id_in_string[1]))
+        
+        nums = line_info[1].split('|')
 
+        # Parse the winning numbers (left)
+        nums_in_string = nums[0].strip().split(' ')
+        nums_in_string = [x for x in nums_in_string if x != ''] # Remove empty element due to leading black spaces
+        card.winning_numbers = set(map(lambda x: int(x), nums_in_string))
+
+        # Parse the playing numbers (right)
+        nums_in_string = nums[1].strip().split(' ')
+        nums_in_string = [x for x in nums_in_string if x != ''] # Remove empty element due to leading black spaces
+        card.playing_numbers = set(map(lambda x: int(x), nums_in_string))
+
+        result.append(card)
+
+    return result
 
 ##### Run the code
 
 # Load the game data
 data = load_data()
 
+result = 0
+for c in data:
+    result += c.calculate_points()
 
+
+print(f"points: {result}")
