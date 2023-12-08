@@ -1,27 +1,3 @@
-
-class Card:
-    def __init__(self, id):
-        self.id = id
-        self.winning_numbers = {}
-        self.playing_numbers = {}
-
-    def __str__(self):
-        result = f"id:{self.id} -> {self.winning_numbers} | {self.playing_numbers}"
-        return result
-
-    def get_matching_numbers(self):
-        return self.winning_numbers.intersection(self.playing_numbers)
-
-    def calculate_points(self):
-        matching_numbers = self.get_matching_numbers()
-        matching_numbers_count = len(matching_numbers)
-
-        if matching_numbers_count > 0:
-            return pow(2, matching_numbers_count-1)
-        else:
-            return 0
-
-
 def get_lines_from_file_name(file_name):
     data = open(file_name, 'r')
     return data.readlines()
@@ -53,14 +29,58 @@ def load_data():
 
     return result
 
+class Card:
+    def __init__(self, id):
+        self.id = id
+        self.count = 1
+        self.winning_numbers = {}
+        self.playing_numbers = {}
+
+    def __str__(self):
+        result = f"id:{self.id}x{self.count} -> {self.winning_numbers} | {self.playing_numbers}"
+        return result
+
+    def get_matching_numbers(self):
+        return self.winning_numbers.intersection(self.playing_numbers)
+
+    def calculate_points(self):
+        matching_numbers = self.get_matching_numbers()
+        matching_numbers_count = len(matching_numbers)
+
+        if matching_numbers_count > 0:
+            return pow(2, matching_numbers_count-1)
+        else:
+            return 0
+
+def calculate_winning_cards(cards):
+    for i, card in enumerate(cards):
+        matching_numbers = card.get_matching_numbers()
+
+        matching_number_count = len(matching_numbers) if len(matching_numbers) > 0 else 0
+        
+        # Increment the count of the bonus cards by card.count times
+        for j in range(card.count):
+            for k in range(matching_number_count):
+                cards[1+i+k].count += 1
+
+    return cards
 ##### Run the code
 
 # Load the game data
 data = load_data()
 
-result = 0
+
+# Calculate the data for part 1
+result1 = 0
 for c in data:
-    result += c.calculate_points()
+    result1 += c.calculate_points()
+
+print(f"Part 1: {result1}")
 
 
-print(f"points: {result}")
+# Calculate the data for part 2
+cards = calculate_winning_cards(data)
+result2 = 0
+for card in cards:
+    result2 += card.count
+print(f"Part 2: {result2}")
