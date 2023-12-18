@@ -10,12 +10,16 @@ def load_data():
     lines = get_lines_from_file_name("./data.txt")
     result = AoC_05()
 
-    # Parse the initial seeds
+    # Parse the initial seeds for part 1
     result.seeds = list(map(lambda x: int(x),
                            lines[0].split(':')[1]
                                    .strip()
                                    .split(' ')
     ))
+    
+    # Parse the initial seeds for part 2
+    for i in range(0, len(result.seeds), 2):
+        result.seed_ranges.append([result.seeds[i], result.seeds[i+1]])
 
     # Parse the mapping
     current_map_type = MapType.SEED
@@ -55,12 +59,17 @@ def load_data():
 class AoC_05:
     def __init__(self) -> None:
         self.seeds = []
+        self.seed_ranges = []
         self.maps = []
 
     def __str__(self) -> str:
-        return f"\n  seeds: {self.seeds}\n  maps: {self.maps}"
+        return f"""
+  seeds 1: {self.seeds}
+  seeds 2: {self.seed_ranges}
+  maps: {self.maps}
+"""
     
-    def get_lowest_location(self) -> int:
+    def get_lowest_location_part1(self) -> int:
         locations = []
         for i, seed in enumerate(self.seeds):
             location = self.maps[MapType.HUMIDITY].get_destination(
@@ -75,6 +84,27 @@ class AoC_05:
             #print(f"seed[{i}]: {data.seeds[i]} -> {location}")
             locations.append(location)
         
+        return min(locations)
+    
+    # TODO This takes too long.  Optimize it via mapping ranges
+    def get_lowest_location_part2(self) -> int:
+        locations = []
+
+        for i, sr in enumerate(self.seed_ranges):
+            #print(f"i[{i}] -> start: {sr[0]}, length: {sr[1]}")
+            for i in range(sr[0], sr[0]+sr[1]):
+                location = self.maps[MapType.HUMIDITY].get_destination(
+                    self.maps[MapType.TEMPERATURE].get_destination(
+                    self.maps[MapType.LIGHT].get_destination(
+                    self.maps[MapType.WATER].get_destination(
+                    self.maps[MapType.FERTILIZER].get_destination(
+                    self.maps[MapType.SOIL].get_destination(
+                    self.maps[MapType.SEED].get_destination(i)
+                ))))))
+                
+                #print(f"seed[{i}]: -> {location}")
+                locations.append(location)
+                
         return min(locations)
 
 class MapType(IntEnum):
@@ -118,7 +148,7 @@ class Map:
         self.ranges = []
     
     def __str__(self) -> str:
-        return f"Map.ranges: {self.ranges}\n"
+        return f"\n    {self.ranges}"
     
     def __repr__(self) -> str:
         return self.__str__()
@@ -140,9 +170,16 @@ start_time = datetime.datetime.now()
 data = load_data()
 end_time = datetime.datetime.now()
 print(f"Loading data took {(end_time-start_time).microseconds} microseconds")
+#print(data)
 
-# Calculate the data for part 1
+# # Calculate the data for part 1
+# start_time = datetime.datetime.now()
+# result1 = data.get_lowest_location_part1()
+# end_time = datetime.datetime.now()
+# print(f"Part 1: {result1} (Took {(end_time-start_time).microseconds} microseconds)")
+
+# Calculate the data for part 2
 start_time = datetime.datetime.now()
-result1 = data.get_lowest_location()
+result2 = data.get_lowest_location_part2()
 end_time = datetime.datetime.now()
-print(f"Part 1: {result1} (Took {(end_time-start_time).microseconds} microseconds)")
+print(f"Part 2: {result2} (Took {(end_time-start_time).microseconds} microseconds)")
